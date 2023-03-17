@@ -1,6 +1,9 @@
 package com.example.recipebook.app
 
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class AppRecipeBook {
+@HiltAndroidApp
+class AppRecipeBook: Application() {
 
 }
