@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.recipebook.data.viewModels.RecipeBookViewModel
 import com.example.recipebook.navigation.SetupNavHost
 import com.example.recipebook.ui.theme.RecipeBookTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,67 +29,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             RecipeBookTheme {
+                val viewModel = hiltViewModel<RecipeBookViewModel>()
+
                 val navController = rememberNavController()
-                SetupNavHost(navController = navController)
+                SetupNavHost(navController = navController, viewModel = viewModel)
             }
-        }
-    }
-}
-
-@Composable
-fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit) {
-    OutlinedTextField(value = "",
-        onValueChange = { onTextChange(it) },
-        trailingIcon = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = stringResource(R.string.search))
-        },
-        placeholder = {
-            Text(stringResource(R.string.search))
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp)
-    )
-}
-
-@Composable
-fun HomeBody(modifier: Modifier = Modifier) {
-    LazyVerticalGrid(verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp),
-        modifier = modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(2),
-    ) {
-        // elements
-    }
-}
-
-@Composable
-fun HomeItem(modifier: Modifier = Modifier) {
-    Surface(modifier = modifier,
-        shape = MaterialTheme.shapes.medium
-    ) {
-        Column(modifier = modifier) {
-            Icon(imageVector = Icons.Default.Home,
-                contentDescription = null,
-                modifier = modifier
-                    .size(160.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Text(text = "Заголовок",
-                modifier = modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(4.dp),
-                style = MaterialTheme.typography.h6,
-                maxLines = 1
-            )
-            Text(text = "Описание",
-                modifier = modifier
-                    .padding(bottom = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                maxLines = 1,
-                style = MaterialTheme.typography.caption
-            )
         }
     }
 }

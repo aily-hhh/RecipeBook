@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.recipebook.data.viewModels.RecipeBookViewModel
 import com.example.recipebook.screens.DetailScreen
 import com.example.recipebook.screens.MainScreen
 import com.example.recipebook.utils.Constants
@@ -14,15 +15,15 @@ sealed class Screens(val route: String) {
 }
 
 @Composable
-fun SetupNavHost(navController: NavHostController) {
+fun SetupNavHost(navController: NavHostController, viewModel: RecipeBookViewModel) {
     NavHost(navController = navController,
         startDestination = Screens.MainScreen.route
     ) {
         composable(route = Screens.MainScreen.route) {
-            MainScreen()
+            MainScreen(navController = navController, viewModel = viewModel)
         }
         composable(route = Screens.DetailScreen.route) {
-            DetailScreen()
+            DetailScreen(navController = navController, viewModel = viewModel)
         }
     }
 }
