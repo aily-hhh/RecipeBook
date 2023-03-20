@@ -9,10 +9,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,10 +32,9 @@ import com.example.recipebook.navigation.Screens
 
 @Composable
 fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
-    viewModel.getAllRecipes()
     val recipesList = viewModel.allRecipes.observeAsState(Recipes(listOf())).value
     Log.d("checkData", "Recipes: $recipesList")
-
+    viewModel.getAllRecipes()
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(8.dp)
@@ -43,8 +46,14 @@ fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
 
 @Composable
 fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit) {
-    OutlinedTextField(value = "",
-        onValueChange = { onTextChange(it) },
+    val textInput = rememberSaveable {
+        mutableStateOf("")
+    }
+    OutlinedTextField(value = textInput.value,
+        onValueChange = {
+            onTextChange(it)
+            textInput.value = it
+        },
         trailingIcon = {
             Icon(imageVector = Icons.Default.Search, contentDescription = stringResource(R.string.search))
         },
@@ -61,7 +70,7 @@ fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit) {
 fun HomeBody(modifier: Modifier = Modifier, listRecipes: Recipes, navController: NavController) {
     LazyVerticalGrid(verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(8.dp),
         modifier = modifier.fillMaxWidth(),
         columns = GridCells.Fixed(2),
     ) {

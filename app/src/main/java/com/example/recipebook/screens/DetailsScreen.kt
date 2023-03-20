@@ -32,9 +32,9 @@ import com.example.recipebook.ui.theme.RecipeBookTheme
 
 @Composable
 fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modifier = Modifier) {
-    if (itemId != "" && itemId != null) {
+    if (itemId != "") {
         val currentItem = viewModel.allRecipes
-            .observeAsState(Recipes(listOf())).value.recipes
+            .observeAsState().value!!.recipes
             .first {
                 it.uuid == itemId
             }
@@ -50,7 +50,7 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                         Text(
                             text = currentItem.name,
                             modifier = modifier
-                                .wrapContentWidth(align = CenterHorizontally)
+                                .align(CenterHorizontally)
                                 .paddingFromBaseline(bottom = 4.dp),
                             fontSize = 28.sp,
                             style = MaterialTheme.typography.h6
@@ -60,14 +60,14 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                                 Image(
                                     painter = rememberAsyncImagePainter(item),
                                     contentDescription = null,
-                                    modifier = modifier.fillParentMaxSize()
+                                    modifier = modifier.fillParentMaxWidth()
                                 )
                             }
                         }
                         Row(
                             modifier = modifier
                                 .padding(horizontal = 16.dp)
-                                .wrapContentWidth(Alignment.Start)
+                                .align(Alignment.Start)
                         ) {
                             for (i in 1..currentItem.difficulty) {
                                 Icon(
@@ -79,7 +79,6 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                         Text(
                             text = currentItem.description,
                             modifier = modifier
-                                .wrapContentWidth(align = CenterHorizontally)
                                 .padding(vertical = 16.dp)
                                 .paddingFromBaseline(bottom = 4.dp),
                             style = MaterialTheme.typography.caption,
@@ -88,7 +87,6 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                         Text(
                             text = currentItem.instructions,
                             modifier = modifier
-                                .wrapContentWidth(align = CenterHorizontally)
                                 .paddingFromBaseline(bottom = 16.dp),
                             style = MaterialTheme.typography.caption,
                             fontSize = 20.sp
@@ -96,8 +94,8 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                         Text(
                             text = currentItem.lastUpdated.toString(),
                             modifier = modifier
-                                .wrapContentWidth(align = Alignment.Start)
-                                .paddingFromBaseline(bottom = 4.dp),
+                                .paddingFromBaseline(bottom = 4.dp)
+                                .align(Alignment.End),
                             style = MaterialTheme.typography.caption,
                             fontSize = 10.sp
                         )
@@ -119,27 +117,33 @@ fun PrevDetail(modifier: Modifier = Modifier) {
             LazyColumn {
                 item {
                     Column(modifier = modifier) {
-                        Text(text = "Recipe",
+                        Text(text = "Ham or Sausage Quiche",
                             modifier = modifier
-                                .wrapContentWidth(align = CenterHorizontally)
+                                .align(CenterHorizontally)
                                 .paddingFromBaseline(bottom = 4.dp),
                             fontSize = 28.sp,
                             style = MaterialTheme.typography.h6
                         )
                         LazyRow(modifier = modifier.padding(vertical = 8.dp)) {
-
+                            item {
+                                Image(
+                                    painter = rememberAsyncImagePainter("https://bigoven-res.cloudinary.com/image/upload/t_recipe-256/ham-or-sausage-quiche.jpg"),
+                                    contentDescription = null,
+                                    modifier = modifier.fillParentMaxWidth()
+                                )
+                            }
                         }
                         Row(modifier = modifier
                             .padding(horizontal = 16.dp)
                             .wrapContentWidth(Alignment.Start)
                         ) {
-                            for (i in 1..4) {
+                            for (i in 1..2) {
                                 Icon(imageVector = Icons.Default.Star,
                                     contentDescription = i.toString()
                                 )
                             }
                         }
-                        Text(text = "Description about recipe :)",
+                        Text(text = "Easy quiche - try it with different meat and cheese combinations.",
                             modifier = modifier
                                 .wrapContentWidth(align = CenterHorizontally)
                                 .padding(vertical = 16.dp)
@@ -147,7 +151,7 @@ fun PrevDetail(modifier: Modifier = Modifier) {
                             style = MaterialTheme.typography.caption,
                             fontSize = 20.sp
                         )
-                        Text(text = "Instruction recipe. Can i do also?",
+                        Text(text = "Separate the eggs. Beat the egg whites until fluffy. Mix together cream cheese and egg yolks, then stir in the cheese, ham or sausage, and jalapenos. Fold in the beaten egg whites. Pour into unbaked pie crust and bake at 350 for 35 min.",
                             modifier = modifier
                                 .wrapContentWidth(align = CenterHorizontally)
                                 .paddingFromBaseline(bottom = 16.dp),
@@ -156,7 +160,7 @@ fun PrevDetail(modifier: Modifier = Modifier) {
                         )
                         Text(text = "12.12.12",
                             modifier = modifier
-                                .wrapContentWidth(align = Alignment.Start)
+                                .align(Alignment.End)
                                 .paddingFromBaseline(bottom = 4.dp),
                             style = MaterialTheme.typography.caption,
                             fontSize = 10.sp
