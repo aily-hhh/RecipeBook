@@ -32,7 +32,10 @@ fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
     val recipesList = viewModel.allRecipes.observeAsState(Recipes(listOf())).value
     Log.d("checkData", "Recipes: $recipesList")
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(8.dp)
+    ) {
         SearchBar(onTextChange = {})
         HomeBody(listRecipes = recipesList, navController = navController)
     }
@@ -62,8 +65,10 @@ fun HomeBody(modifier: Modifier = Modifier, listRecipes: Recipes, navController:
         modifier = modifier.fillMaxWidth(),
         columns = GridCells.Fixed(2),
     ) {
-        items(listRecipes.recipes) {
-            HomeItem(recipe = it, navController = navController)
+        if (listRecipes.recipes.isNotEmpty()) {
+            items(listRecipes.recipes) {
+                HomeItem(recipe = it, navController = navController)
+            }
         }
     }
 }
@@ -73,34 +78,36 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
     Card(modifier = modifier
         .padding(8.dp)
         .clickable {
-                   navController.navigate(Screens.DetailScreen.route + "/${recipe.uuid}")
+            navController.navigate(Screens.DetailScreen.route + "/${recipe.uuid}")
         },
         elevation = 6.dp
     ) {
         Column(modifier = modifier) {
-            Image(painter = rememberAsyncImagePainter(recipe.images[0]),
-                contentDescription = null
-            )
-            Icon(imageVector = Icons.Default.Home,
-                contentDescription = null,
-                modifier = modifier
-                    .size(160.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Text(text = recipe.name,
-                modifier = modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(4.dp),
-                style = MaterialTheme.typography.h6,
-                maxLines = 1
-            )
-            Text(text = recipe.description,
-                modifier = modifier
-                    .padding(bottom = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                maxLines = 1,
-                style = MaterialTheme.typography.caption
-            )
+            if (recipe.images.isNotEmpty()) {
+                Image(
+                    painter = rememberAsyncImagePainter(recipe.images[0]),
+                    contentDescription = null
+                )
+            }
+            if (recipe.name.isNotEmpty()) {
+                Text(
+                    text = recipe.name,
+                    modifier = modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(4.dp),
+                    style = MaterialTheme.typography.h6
+                )
+            }
+            if (recipe.description.isNotEmpty()) {
+                Text(
+                    text = recipe.description,
+                    modifier = modifier
+                        .padding(bottom = 8.dp)
+                        .align(Alignment.CenterHorizontally),
+                    maxLines = 4,
+                    style = MaterialTheme.typography.caption
+                )
+            }
         }
     }
 }
