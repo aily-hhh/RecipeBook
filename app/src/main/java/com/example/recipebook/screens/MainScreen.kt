@@ -72,7 +72,7 @@ fun HomeBody(modifier: Modifier = Modifier, listRecipes: Recipes, navController:
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp),
         modifier = modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(1)
     ) {
         if (listRecipes.recipes.isNotEmpty()) {
             items(listRecipes.recipes) {
@@ -89,31 +89,33 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
         .clickable {
             navController.navigate(Screens.DetailScreen.route + "/${recipe.uuid}")
         },
-        elevation = 6.dp
+        elevation = 6.dp,
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = modifier) {
-            if (recipe.images.isNotEmpty()) {
+            if (!recipe.images.isNullOrEmpty()) {
                 Image(
                     painter = rememberAsyncImagePainter(recipe.images[0]),
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = modifier.sizeIn(150.dp)
                 )
             }
-            if (recipe.name.isNotEmpty()) {
+            if (!recipe.name.isNullOrEmpty()) {
                 Text(
                     text = recipe.name,
                     modifier = modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(4.dp),
+                        .padding(8.dp),
                     style = MaterialTheme.typography.h6
                 )
             }
-            if (recipe.description.isNotEmpty()) {
+            if (!recipe.description.isNullOrEmpty()) {
                 Text(
                     text = recipe.description,
                     modifier = modifier
-                        .padding(bottom = 8.dp)
-                        .align(Alignment.CenterHorizontally),
-                    maxLines = 4,
+                        .align(Alignment.CenterHorizontally)
+                        .padding(8.dp),
+                    maxLines = 3,
                     style = MaterialTheme.typography.caption
                 )
             }
