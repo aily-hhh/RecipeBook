@@ -29,12 +29,12 @@ import com.example.recipebook.navigation.Screens
 @Composable
 fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
     viewModel.getAllRecipes()
-    val recipesList = viewModel.allRecipes.observeAsState(listOf<Recipes>()).value
+    val recipesList = viewModel.allRecipes.observeAsState(Recipes(listOf())).value
     Log.d("checkData", "Recipes: $recipesList")
 
     Surface(modifier = Modifier.fillMaxSize()) {
         SearchBar(onTextChange = {})
-        HomeBody(listRecipes = recipesList as Recipes, navController = navController)
+        HomeBody(listRecipes = recipesList, navController = navController)
     }
 }
 
