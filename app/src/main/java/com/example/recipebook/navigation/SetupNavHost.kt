@@ -22,8 +22,8 @@ fun SetupNavHost(navController: NavHostController, viewModel: RecipeBookViewMode
         composable(route = Screens.MainScreen.route) {
             MainScreen(navController = navController, viewModel = viewModel)
         }
-        composable(route = Screens.DetailScreen.route) {
-            DetailScreen(navController = navController, viewModel = viewModel)
+        composable(route = Screens.DetailScreen.route + "/{id}") { backStackEntry ->
+            DetailScreen(navController = navController, viewModel = viewModel, itemId = backStackEntry.arguments?.getString("id") ?: "1")
         }
     }
 }

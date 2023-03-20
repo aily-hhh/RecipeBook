@@ -1,6 +1,8 @@
 package com.example.recipebook.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -16,10 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.recipebook.R
 import com.example.recipebook.data.models.Recipe
 import com.example.recipebook.data.models.Recipes
 import com.example.recipebook.data.viewModels.RecipeBookViewModel
+import com.example.recipebook.navigation.Screens
 
 
 @Composable
@@ -30,7 +34,7 @@ fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
 
     Surface(modifier = Modifier.fillMaxSize()) {
         SearchBar(onTextChange = {})
-        HomeBody(listRecipes = recipesList as Recipes)
+        HomeBody(listRecipes = recipesList as Recipes, navController = navController)
     }
 }
 
@@ -51,7 +55,7 @@ fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit) {
 }
 
 @Composable
-fun HomeBody(modifier: Modifier = Modifier, listRecipes: Recipes) {
+fun HomeBody(modifier: Modifier = Modifier, listRecipes: Recipes, navController: NavController) {
     LazyVerticalGrid(verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(16.dp),
@@ -59,17 +63,24 @@ fun HomeBody(modifier: Modifier = Modifier, listRecipes: Recipes) {
         columns = GridCells.Fixed(2),
     ) {
         items(listRecipes.recipes) {
-            HomeItem(recipe = it)
+            HomeItem(recipe = it, navController = navController)
         }
     }
 }
 
 @Composable
-fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe) {
-    Surface(modifier = modifier,
-        shape = MaterialTheme.shapes.medium
+fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavController) {
+    Card(modifier = modifier
+        .padding(8.dp)
+        .clickable {
+                   navController.navigate(Screens.DetailScreen.route + "/${recipe.uuid}")
+        },
+        elevation = 6.dp
     ) {
         Column(modifier = modifier) {
+            Image(painter = rememberAsyncImagePainter(recipe.images[0]),
+                contentDescription = null
+            )
             Icon(imageVector = Icons.Default.Home,
                 contentDescription = null,
                 modifier = modifier
