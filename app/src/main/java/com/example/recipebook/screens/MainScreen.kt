@@ -106,7 +106,7 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
                     text = recipe.name,
                     modifier = modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(8.dp),
+                        .padding(vertical = 4.dp, horizontal = 8.dp),
                     style = MaterialTheme.typography.h6
                 )
             }
@@ -115,7 +115,7 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
                     text = recipe.description,
                     modifier = modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(8.dp),
+                        .padding(top = 4.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
                     maxLines = 2,
                     style = MaterialTheme.typography.caption
                 )

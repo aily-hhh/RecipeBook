@@ -13,6 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -74,7 +75,7 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                     }
                     Row(
                         modifier = modifier
-                            .padding(start = 16.dp, bottom = 16.dp)
+                            .padding(bottom = 16.dp)
                             .align(Alignment.Start)
                     ) {
                         for (i in 1..currentItem.difficulty) {
@@ -99,10 +100,11 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                     Text(
                         text = currentItem.lastUpdated.toString(),
                         modifier = modifier
-                            .paddingFromBaseline(bottom = 4.dp)
+                            .paddingFromBaseline(bottom = 16.dp)
+                            .padding(end = 8.dp)
                             .align(Alignment.End),
-                        style = MaterialTheme.typography.caption,
-                        fontSize = 10.sp
+                        fontSize = 10.sp,
+                        color = Color.LightGray
                     )
                 }
             }
