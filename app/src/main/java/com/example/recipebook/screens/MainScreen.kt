@@ -89,7 +89,7 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
         .clickable {
             navController.navigate(Screens.DetailScreen.route + "/${recipe.uuid}")
         },
-        elevation = 6.dp,
+        elevation = 4.dp,
         shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = modifier) {
@@ -98,9 +98,7 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
                     painter = rememberAsyncImagePainter(recipe.images[0]),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
+                    modifier = modifier.height(196.dp).fillMaxWidth()
                 )
             }
             if (!recipe.name.isNullOrEmpty()) {
@@ -118,7 +116,7 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
                     modifier = modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp),
-                    maxLines = 3,
+                    maxLines = 2,
                     style = MaterialTheme.typography.caption
                 )
             }
@@ -135,7 +133,7 @@ fun PrevColumn(modifier: Modifier = Modifier) {
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = modifier.fillMaxWidth().fillMaxHeight()
+                    modifier = modifier.height(180.dp).fillMaxWidth()
                 )
 
                 Text(

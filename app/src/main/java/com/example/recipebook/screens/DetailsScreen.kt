@@ -5,12 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,7 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +23,9 @@ import com.example.recipebook.R
 import coil.compose.rememberAsyncImagePainter
 import com.example.recipebook.data.viewModels.RecipeBookViewModel
 import com.example.recipebook.ui.theme.RecipeBookTheme
+import com.example.recipebook.utils.HtmlText
 
+@ExperimentalMaterialApi
 @Composable
 fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modifier = Modifier) {
     if (itemId != "") {
@@ -37,33 +36,45 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
             }
 
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp, vertical = 16.dp)
+            contentPadding = PaddingValues(16.dp),
+            modifier = modifier.fillMaxSize()
         ){
             item {
                 Column(modifier = modifier) {
-                    Text(
-                        text = currentItem.name,
-                        modifier = modifier
-                            .align(CenterHorizontally)
-                            .paddingFromBaseline(bottom = 4.dp),
-                        fontSize = 28.sp,
-                        style = MaterialTheme.typography.h6
-                    )
-                    LazyRow(modifier = modifier.padding(vertical = 8.dp)) {
-                        items(currentItem.images) { item ->
-                            Image(
-                                painter = rememberAsyncImagePainter(item),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = modifier.height(360.dp)
-                            )
+                    if (!currentItem.name.isNullOrEmpty()) {
+                        Text(
+                            text = currentItem.name,
+                            modifier = modifier
+                                .align(CenterHorizontally)
+                                .paddingFromBaseline(bottom = 4.dp),
+                            fontSize = 22.sp,
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
+                    if (!currentItem.images.isNullOrEmpty()) {
+                        LazyRow(modifier = modifier.padding(vertical = 8.dp)) {
+                            items(currentItem.images) { item ->
+                                Card(
+                                    onClick = {},
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .height(360.dp)
+                                ) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(item),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = modifier
+                                            .height(360.dp)
+                                            .fillMaxWidth()
+                                    )
+                                }
+                            }
                         }
                     }
                     Row(
                         modifier = modifier
-                            .padding(horizontal = 16.dp)
+                            .padding(start = 16.dp, bottom = 16.dp)
                             .align(Alignment.Start)
                     ) {
                         for (i in 1..currentItem.difficulty) {
@@ -73,21 +84,18 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                             )
                         }
                     }
-                    Text(
-                        text = currentItem.description,
-                        modifier = modifier
-                            .padding(vertical = 16.dp)
-                            .paddingFromBaseline(bottom = 4.dp),
-                        style = MaterialTheme.typography.caption,
-                        fontSize = 20.sp
-                    )
-                    Text(
-                        text = currentItem.instructions,
-                        modifier = modifier
-                            .paddingFromBaseline(bottom = 16.dp),
-                        style = MaterialTheme.typography.caption,
-                        fontSize = 20.sp
-                    )
+                    if (!currentItem.description.isNullOrEmpty()) {
+                        TextSection(
+                            title = stringResource(id = R.string.description),
+                            currentText = currentItem.description
+                        )
+                    }
+                    if (!currentItem.instructions.isNullOrEmpty()) {
+                        TextSection(
+                            title = stringResource(id = R.string.instruction),
+                            currentText = currentItem.instructions
+                        )
+                    }
                     Text(
                         text = currentItem.lastUpdated.toString(),
                         modifier = modifier
@@ -99,6 +107,30 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TextSection(modifier: Modifier = Modifier,
+                title: String,
+                currentText: String
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            modifier = modifier
+                .align(CenterHorizontally)
+                .paddingFromBaseline(bottom = 8.dp),
+            style = MaterialTheme.typography.button,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 12.sp
+        )
+        HtmlText(
+            html = currentText,
+            modifier = modifier
+                .padding(bottom = 24.dp),
+            textSize = (16).toFloat()
+        )
     }
 }
 
@@ -117,7 +149,7 @@ fun PrevDetail(modifier: Modifier = Modifier) {
                             modifier = modifier
                                 .align(CenterHorizontally)
                                 .paddingFromBaseline(bottom = 4.dp),
-                            fontSize = 28.sp,
+                            fontSize = 22.sp,
                             style = MaterialTheme.typography.h6
                         )
                         LazyRow(modifier = modifier.padding(vertical = 8.dp)) {
@@ -127,12 +159,13 @@ fun PrevDetail(modifier: Modifier = Modifier) {
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = modifier
-                                        .fillParentMaxSize()
+                                        .height(360.dp)
+                                        .fillMaxWidth()
                                 )
                             }
                         }
                         Row(modifier = modifier
-                            .padding(horizontal = 16.dp)
+                            .padding(start = 16.dp, bottom = 16.dp)
                             .wrapContentWidth(Alignment.Start)
                         ) {
                             for (i in 1..2) {
@@ -141,21 +174,8 @@ fun PrevDetail(modifier: Modifier = Modifier) {
                                 )
                             }
                         }
-                        Text(text = "Easy quiche - try it with different meat and cheese combinations.",
-                            modifier = modifier
-                                .wrapContentWidth(align = CenterHorizontally)
-                                .padding(vertical = 16.dp)
-                                .paddingFromBaseline(bottom = 4.dp),
-                            style = MaterialTheme.typography.caption,
-                            fontSize = 20.sp
-                        )
-                        Text(text = "Separate the eggs. Beat the egg whites until fluffy. Mix together cream cheese and egg yolks, then stir in the cheese, ham or sausage, and jalapenos. Fold in the beaten egg whites. Pour into unbaked pie crust and bake at 350 for 35 min.",
-                            modifier = modifier
-                                .wrapContentWidth(align = CenterHorizontally)
-                                .paddingFromBaseline(bottom = 16.dp),
-                            style = MaterialTheme.typography.caption,
-                            fontSize = 20.sp
-                        )
+                        TextSection(title = stringResource(id = R.string.description), currentText = "Easy quiche - try it with different meat and cheese combinations.")
+                        TextSection(title = stringResource(id = R.string.instruction), currentText = "Separate the eggs. Beat the egg whites until fluffy. Mix together cream cheese and egg yolks, then stir in the cheese, ham or sausage, and jalapenos. Fold in the beaten egg whites. Pour into unbaked pie crust and bake at 350 for 35 min.")
                         Text(text = "12.12.12",
                             modifier = modifier
                                 .align(Alignment.End)
