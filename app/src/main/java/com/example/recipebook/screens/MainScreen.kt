@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -35,18 +36,25 @@ import com.example.recipebook.ui.theme.RecipeBookTheme
 fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
     val recipesList = viewModel.allRecipes.observeAsState(Recipes(listOf())).value
     Log.d("checkData", "Recipes: $recipesList")
-    viewModel.getAllRecipes()
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(8.dp)
     ) {
-        SearchBar(onTextChange = {})
+        SearchBar(
+            onTextChange = {
+                if (it == "") {
+                viewModel.getAllRecipes()
+                } else {
+                    viewModel.performQuery(it)
+                } },
+            viewModel = viewModel
+        )
         HomeBody(listRecipes = recipesList, navController = navController)
     }
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit) {
+fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit, viewModel: RecipeBookViewModel) {
     val textInput = rememberSaveable {
         mutableStateOf("")
     }
@@ -56,14 +64,29 @@ fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit) {
             textInput.value = it
         },
         trailingIcon = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = stringResource(R.string.search))
+            if (textInput.value == "") {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.search),
+                    modifier = modifier.clickable {
+                        textInput.value = ""
+                        viewModel.getAllRecipes()
+                    }
+                )
+            }
         },
         placeholder = {
             Text(stringResource(R.string.search))
         },
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = 56.dp),
+        singleLine = true
     )
 }
 

@@ -108,7 +108,7 @@ fun DetailScreen(
                             currentText = currentItem.instructions
                         )
                     }
-                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
                     val instant = Instant.ofEpochMilli(currentItem.lastUpdated.toLong())
                     val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
                     Text(

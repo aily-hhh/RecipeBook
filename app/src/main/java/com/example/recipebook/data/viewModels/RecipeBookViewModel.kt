@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recipebook.data.models.Recipe
 import com.example.recipebook.data.models.Recipes
 import com.example.recipebook.data.network.ApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +27,22 @@ class RecipeBookViewModel @Inject constructor(private val repository: ApiReposit
                     Log.d("checkData", "Failed to load recipes: ${it.errorBody()}")
                 }
             }
+        }
+    }
+
+    fun performQuery(query: String) {
+        val filteredList = ArrayList<Recipe>()
+        viewModelScope.launch {
+            delay(300)
+            allRecipes.value?.recipes?.forEach { recipe ->
+                if (recipe.name?.lowercase()?.contains(query.lowercase().trim()) == true
+                    || recipe.description?.lowercase()?.contains(query.lowercase().trim()) == true
+                    || recipe.instructions?.lowercase()?.contains(query.lowercase().trim()) == true
+                ) {
+                    filteredList.add(recipe)
+                }
+            }
+            _allRecipes.postValue(Recipes(filteredList))
         }
     }
 }

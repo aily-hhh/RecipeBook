@@ -1,5 +1,7 @@
 package com.example.recipebook.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -18,6 +20,7 @@ sealed class Screens(val route: String) {
     object ImageScreen: Screens(route = Constants.Screens.IMAGE_SCREEN)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SetupNavHost(navController: NavHostController, viewModel: RecipeBookViewModel) {
@@ -35,7 +38,9 @@ fun SetupNavHost(navController: NavHostController, viewModel: RecipeBookViewMode
             )
         }
         composable(route = Screens.ImageScreen.route + "/{itemUrl}") {backStackEntry ->
-            ImageScreen(itemUrl = backStackEntry.arguments?.getString("itemUrl") ?: "")
+            backStackEntry.arguments?.getString("itemUrl")?.let {
+                ImageScreen(itemUrl = it)
+            }
         }
     }
 }
