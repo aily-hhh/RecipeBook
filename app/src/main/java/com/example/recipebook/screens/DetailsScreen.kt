@@ -1,5 +1,6 @@
 package com.example.recipebook.screens
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,23 +10,31 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import com.example.recipebook.R
 import coil.compose.rememberAsyncImagePainter
 import com.example.recipebook.data.viewModels.RecipeBookViewModel
 import com.example.recipebook.ui.theme.RecipeBookTheme
 import com.example.recipebook.utils.HtmlText
+import com.google.accompanist.pager.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
+import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalPagerApi::class)
 @ExperimentalMaterialApi
 @Composable
 fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modifier = Modifier) {
@@ -53,25 +62,10 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                         )
                     }
                     if (!currentItem.images.isNullOrEmpty()) {
-                        LazyRow(modifier = modifier.padding(vertical = 8.dp)) {
-                            items(currentItem.images) { item ->
-                                Card(
-                                    onClick = {},
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .height(360.dp)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(item),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = modifier
-                                            .height(360.dp)
-                                            .fillMaxWidth()
-                                    )
-                                }
-                            }
-                        }
+                        ViewPagerSlider(
+                            list = currentItem.images,
+                            modifier = modifier.padding(top = 4.dp)
+                        )
                     }
                     Row(
                         modifier = modifier
@@ -136,6 +130,52 @@ fun TextSection(modifier: Modifier = Modifier,
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalPagerApi
+@Composable
+fun ViewPagerSlider(list: List<String>, modifier: Modifier = Modifier) {
+    val pagerState = rememberPagerState(
+        initialPage = 0
+    )
+
+    LaunchedEffect(Unit) {
+        yield()
+        delay(15000)
+        pagerState.animateScrollToPage(
+            page = (pagerState.currentPage + 1) % (list.size),
+            animationSpec = tween(700)
+        )
+    }
+    
+    Column(modifier = modifier) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = modifier,
+            count = list.size
+        ) { page ->
+            Card(onClick = {  },
+                modifier = modifier
+            ) {
+                val newItem = list[page]
+                Image(painter = rememberAsyncImagePainter(newItem),
+                    contentDescription = null,
+                    modifier = modifier
+                        .height(360.dp)
+                        .fillMaxWidth()
+                )
+            }
+        }
+
+        HorizontalPagerIndicator(
+            pagerState = pagerState,
+            modifier = modifier
+                .align(CenterHorizontally)
+                .padding(16.dp)
+        )
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PrevDetail(modifier: Modifier = Modifier) {
@@ -154,18 +194,7 @@ fun PrevDetail(modifier: Modifier = Modifier) {
                             fontSize = 22.sp,
                             style = MaterialTheme.typography.h6
                         )
-                        LazyRow(modifier = modifier.padding(vertical = 8.dp)) {
-                            item {
-                                Image(
-                                    painter = rememberAsyncImagePainter("https://bigoven-res.cloudinary.com/image/upload/t_recipe-256/ham-or-sausage-quiche.jpg"),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = modifier
-                                        .height(360.dp)
-                                        .fillMaxWidth()
-                                )
-                            }
-                        }
+                        ViewPagerSlider(list = listOf(""))
                         Row(modifier = modifier
                             .padding(start = 16.dp, bottom = 16.dp)
                             .wrapContentWidth(Alignment.Start)

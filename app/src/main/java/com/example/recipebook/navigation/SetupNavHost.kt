@@ -1,5 +1,6 @@
 package com.example.recipebook.navigation
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,7 @@ sealed class Screens(val route: String) {
     object DetailScreen: Screens(route = Constants.Screens.DETAILS_SCREEN)
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SetupNavHost(navController: NavHostController, viewModel: RecipeBookViewModel) {
     NavHost(navController = navController,
