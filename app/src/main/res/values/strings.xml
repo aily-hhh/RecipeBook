@@ -4,4 +4,7 @@
     <string name="description">Description</string>
     <string name="instruction">Instruction</string>
     <string name="download">Download</string>
+    <string name="by_default">By default</string>
+    <string name="by_date">By date</string>
+    <string name="by_name">By name</string>
 </resources>

@@ -11,6 +11,8 @@ import com.example.recipebook.data.network.ApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
+import java.util.Comparator
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,6 +45,78 @@ class RecipeBookViewModel @Inject constructor(private val repository: ApiReposit
                 }
             }
             _allRecipes.postValue(Recipes(filteredList))
+        }
+    }
+
+    fun sortDateAsc() {
+        val sortedList = allRecipes.value?.recipes?.sortedBy { it.lastUpdated }
+        _allRecipes.postValue(sortedList?.let { Recipes(it) })
+    }
+
+    fun sortDateDesc() {
+        val sortedList = allRecipes.value?.recipes?.sortedByDescending { it.lastUpdated }
+        _allRecipes.postValue(sortedList?.let { Recipes(it) })
+    }
+
+    fun sortNameAsc() {
+        val sortedList = allRecipes.value?.recipes?.sortedBy { it.name }
+        _allRecipes.postValue(sortedList?.let { Recipes(it) })
+    }
+
+    fun sortNameDesc() {
+        val sortedList = allRecipes.value?.recipes?.sortedByDescending { it.name }
+        _allRecipes.postValue(sortedList?.let { Recipes(it) })
+    }
+
+    fun getAllRecipesDateAsc() {
+        viewModelScope.launch {
+            repository.getAllRecipes().let {
+                if (it.isSuccessful) {
+                    val sortedList = it.body()?.recipes?.sortedBy { s -> s.lastUpdated }
+                    _allRecipes.value = sortedList?.let { it1 -> Recipes(it1) }
+                } else {
+                    Log.d("checkData", "Failed to load recipes: ${it.errorBody()}")
+                }
+            }
+        }
+    }
+
+    fun getAllRecipesDateDesc() {
+        viewModelScope.launch {
+            repository.getAllRecipes().let {
+                if (it.isSuccessful) {
+                    val sortedList = it.body()?.recipes?.sortedByDescending { s -> s.lastUpdated }
+                    _allRecipes.value = sortedList?.let { it1 -> Recipes(it1) }
+                } else {
+                    Log.d("checkData", "Failed to load recipes: ${it.errorBody()}")
+                }
+            }
+        }
+    }
+
+    fun getAllRecipesNameAsc() {
+        viewModelScope.launch {
+            repository.getAllRecipes().let {
+                if (it.isSuccessful) {
+                    val sortedList = it.body()?.recipes?.sortedBy { s -> s.name }
+                    _allRecipes.value = sortedList?.let { it1 -> Recipes(it1) }
+                } else {
+                    Log.d("checkData", "Failed to load recipes: ${it.errorBody()}")
+                }
+            }
+        }
+    }
+
+    fun getAllRecipesNameDesc() {
+        viewModelScope.launch {
+            repository.getAllRecipes().let {
+                if (it.isSuccessful) {
+                    val sortedList = it.body()?.recipes?.sortedByDescending { s -> s.name }
+                    _allRecipes.value = sortedList?.let { it1 -> Recipes(it1) }
+                } else {
+                    Log.d("checkData", "Failed to load recipes: ${it.errorBody()}")
+                }
+            }
         }
     }
 }

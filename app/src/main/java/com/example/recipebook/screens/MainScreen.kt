@@ -9,15 +9,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,21 +39,133 @@ fun MainScreen(navController: NavController, viewModel: RecipeBookViewModel) {
         .fillMaxSize()
         .padding(8.dp)
     ) {
+        val expanded = rememberSaveable { mutableStateOf(false) }
+        val selectedOption = rememberSaveable { mutableStateOf("By default") }
+
         SearchBar(
             onTextChange = {
                 if (it == "") {
-                viewModel.getAllRecipes()
+                    updateRecipes(selectedOption.value, viewModel)
                 } else {
                     viewModel.performQuery(it)
                 } },
+            selectedOption = selectedOption.value,
             viewModel = viewModel
         )
+        Box {
+            TextButton(
+                onClick = {
+                    expanded.value = true
+                }
+            ) {
+                Row {
+                    Text(text = selectedOption.value)
+                    if (expanded.value) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "DropDown menu",
+                            Modifier.rotate(180f)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "DropDown menu"
+                        )
+                    }
+                }
+            }
+            DropdownMenu(
+                expanded = expanded.value,
+                onDismissRequest = { expanded.value = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.getAllRecipes()
+                        selectedOption.value = "By default"
+                        expanded.value = false
+                    }
+                ) {
+                    Row {
+                        Text(text = stringResource(R.string.by_default))
+                    }
+                }
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.sortDateAsc()
+                        selectedOption.value = "By date (asc)"
+                        expanded.value = false
+                    }
+                ) {
+                    Row {
+                        Text(text = stringResource(R.string.by_date))
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Sort by date up",
+                            Modifier.rotate(90f)
+                        )
+                    }
+                }
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.sortDateDesc()
+                        selectedOption.value = "By date (desc)"
+                        expanded.value = false
+                    }
+                ) {
+                    Row {
+                        Text(text = stringResource(R.string.by_date))
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Sort by date down",
+                            Modifier.rotate(-90f)
+                        )
+                    }
+                }
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.sortNameAsc()
+                        selectedOption.value = "By name (asc)"
+                        expanded.value = false
+                    }
+                ) {
+                    Row {
+                        Text(text = stringResource(R.string.by_name))
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Sort by name up",
+                            Modifier.rotate(90f)
+                        )
+                    }
+                }
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.sortNameDesc()
+                        selectedOption.value = "By name (desc)"
+                        expanded.value = false
+                    }
+                ) {
+                    Row {
+                        Text(text = stringResource(R.string.by_name))
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Sort by name down",
+                            Modifier.rotate(-90f)
+                        )
+                    }
+                }
+            }
+        }
         HomeBody(listRecipes = recipesList, navController = navController)
     }
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit, viewModel: RecipeBookViewModel) {
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    onTextChange: (String) -> Unit,
+    selectedOption: String,
+    viewModel: RecipeBookViewModel
+) {
     val textInput = rememberSaveable {
         mutableStateOf("")
     }
@@ -75,7 +186,7 @@ fun SearchBar(modifier: Modifier = Modifier, onTextChange: (String) -> Unit, vie
                     contentDescription = stringResource(R.string.search),
                     modifier = modifier.clickable {
                         textInput.value = ""
-                        viewModel.getAllRecipes()
+                        updateRecipes(selectedOption, viewModel)
                     }
                 )
             }
@@ -121,7 +232,9 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
                     painter = rememberAsyncImagePainter(recipe.images[0]),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = modifier.height(196.dp).fillMaxWidth()
+                    modifier = modifier
+                        .height(196.dp)
+                        .fillMaxWidth()
                 )
             }
             if (!recipe.name.isNullOrEmpty()) {
@@ -147,34 +260,20 @@ fun HomeItem(modifier: Modifier = Modifier, recipe: Recipe, navController: NavCo
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PrevColumn(modifier: Modifier = Modifier) {
-    RecipeBookTheme() {
-        Column(modifier = modifier) {
-                Image(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier.height(180.dp).fillMaxWidth()
-                )
-
-                Text(
-                    text = "recipe.name",
-                    modifier = modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(8.dp),
-                    style = MaterialTheme.typography.h6
-                )
-
-                Text(
-                    text = "recipe.description",
-                    modifier = modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(8.dp),
-                    maxLines = 3,
-                    style = MaterialTheme.typography.caption
-                )
-        }
+private fun updateRecipes(value: String, viewModel: RecipeBookViewModel) {
+    if (value == "By default") {
+        viewModel.getAllRecipes()
+    }
+    if (value == "By date (asc)") {
+        viewModel.getAllRecipesDateAsc()
+    }
+    if (value == "By date (desc)") {
+        viewModel.getAllRecipesDateDesc()
+    }
+    if (value == "By name (asc)") {
+        viewModel.getAllRecipesNameAsc()
+    }
+    if (value == "By name (desc)") {
+        viewModel.getAllRecipesNameDesc()
     }
 }
