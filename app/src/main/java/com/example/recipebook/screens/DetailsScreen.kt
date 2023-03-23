@@ -1,5 +1,7 @@
 package com.example.recipebook.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -35,8 +37,14 @@ import com.example.recipebook.utils.HtmlText
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.math.absoluteValue
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @ExperimentalMaterialApi
 @Composable
@@ -100,8 +108,11 @@ fun DetailScreen(
                             currentText = currentItem.instructions
                         )
                     }
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                    val instant = Instant.ofEpochMilli(currentItem.lastUpdated.toLong())
+                    val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
                     Text(
-                        text = currentItem.lastUpdated.toString(),
+                        text = formatter.format(date),
                         modifier = modifier
                             .paddingFromBaseline(bottom = 16.dp)
                             .padding(end = 8.dp)
@@ -139,7 +150,6 @@ fun TextSection(modifier: Modifier = Modifier,
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalPagerApi
 @Composable
 fun ViewPagerSlider(list: List<String>, navController: NavController, modifier: Modifier = Modifier) {
