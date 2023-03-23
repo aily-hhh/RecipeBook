@@ -2,6 +2,7 @@ package com.example.recipebook.screens
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,9 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.recipebook.R
 import coil.compose.rememberAsyncImagePainter
 import com.example.recipebook.data.viewModels.RecipeBookViewModel
+import com.example.recipebook.navigation.Screens
 import com.example.recipebook.ui.theme.RecipeBookTheme
 import com.example.recipebook.utils.HtmlText
 import com.google.accompanist.pager.*
@@ -37,7 +40,12 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalPagerApi::class)
 @ExperimentalMaterialApi
 @Composable
-fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modifier = Modifier) {
+fun DetailScreen(
+    viewModel: RecipeBookViewModel,
+    navController: NavController,
+    itemId: String,
+    modifier: Modifier = Modifier
+) {
     if (itemId != "") {
         val currentItem = viewModel.allRecipes
             .observeAsState().value!!.recipes
@@ -64,6 +72,7 @@ fun DetailScreen(viewModel: RecipeBookViewModel, itemId: String, modifier: Modif
                     if (!currentItem.images.isNullOrEmpty()) {
                         ViewPagerSlider(
                             list = currentItem.images,
+                            navController = navController,
                             modifier = modifier.padding(top = 4.dp)
                         )
                     }
@@ -133,7 +142,7 @@ fun TextSection(modifier: Modifier = Modifier,
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalPagerApi
 @Composable
-fun ViewPagerSlider(list: List<String>, modifier: Modifier = Modifier) {
+fun ViewPagerSlider(list: List<String>, navController: NavController, modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(
         initialPage = 0
     )
@@ -153,17 +162,17 @@ fun ViewPagerSlider(list: List<String>, modifier: Modifier = Modifier) {
             modifier = modifier,
             count = list.size
         ) { page ->
-            Card(onClick = {  },
+            val newItem = list[page]
+            Image(painter = rememberAsyncImagePainter(newItem),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = modifier
-            ) {
-                val newItem = list[page]
-                Image(painter = rememberAsyncImagePainter(newItem),
-                    contentDescription = null,
-                    modifier = modifier
-                        .height(360.dp)
-                        .fillMaxWidth()
-                )
-            }
+                    .height(360.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(Screens.ImageScreen.route + "/$newItem")
+                    }
+            )
         }
 
         HorizontalPagerIndicator(
@@ -172,51 +181,5 @@ fun ViewPagerSlider(list: List<String>, modifier: Modifier = Modifier) {
                 .align(CenterHorizontally)
                 .padding(16.dp)
         )
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Preview(showBackground = true)
-@Composable
-fun PrevDetail(modifier: Modifier = Modifier) {
-    RecipeBookTheme() {
-        Surface(modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 16.dp)
-        ) {
-            LazyColumn {
-                item {
-                    Column(modifier = modifier) {
-                        Text(text = "Ham or Sausage Quiche",
-                            modifier = modifier
-                                .align(CenterHorizontally)
-                                .paddingFromBaseline(bottom = 4.dp),
-                            fontSize = 22.sp,
-                            style = MaterialTheme.typography.h6
-                        )
-                        ViewPagerSlider(list = listOf(""))
-                        Row(modifier = modifier
-                            .padding(start = 16.dp, bottom = 16.dp)
-                            .wrapContentWidth(Alignment.Start)
-                        ) {
-                            for (i in 1..2) {
-                                Icon(imageVector = Icons.Default.Star,
-                                    contentDescription = i.toString()
-                                )
-                            }
-                        }
-                        TextSection(title = stringResource(id = R.string.description), currentText = "Easy quiche - try it with different meat and cheese combinations.")
-                        TextSection(title = stringResource(id = R.string.instruction), currentText = "Separate the eggs. Beat the egg whites until fluffy. Mix together cream cheese and egg yolks, then stir in the cheese, ham or sausage, and jalapenos. Fold in the beaten egg whites. Pour into unbaked pie crust and bake at 350 for 35 min.")
-                        Text(text = "12.12.12",
-                            modifier = modifier
-                                .align(Alignment.End)
-                                .paddingFromBaseline(bottom = 4.dp),
-                            style = MaterialTheme.typography.caption,
-                            fontSize = 10.sp
-                        )
-                    }
-                }
-            }
-        }
     }
 }

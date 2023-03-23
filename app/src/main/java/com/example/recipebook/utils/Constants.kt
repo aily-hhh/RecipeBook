@@ -11,6 +11,7 @@ class Constants {
     object Screens {
         const val MAIN_SCREEN = "main_screen"
         const val DETAILS_SCREEN = "details_screen"
+        const val IMAGE_SCREEN = "image_screen"
     }
 }
 
