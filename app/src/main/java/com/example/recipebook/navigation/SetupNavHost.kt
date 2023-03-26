@@ -5,8 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.recipebook.data.viewModels.RecipeBookViewModel
 import com.example.recipebook.screens.DetailScreen
@@ -37,8 +39,13 @@ fun SetupNavHost(navController: NavHostController, viewModel: RecipeBookViewMode
                 itemId = backStackEntry.arguments?.getString("id") ?: ""
             )
         }
-        composable(route = Screens.ImageScreen.route + "/{itemUrl}") {backStackEntry ->
-            backStackEntry.arguments?.getString("itemUrl")?.let {
+        composable(
+            route = Screens.ImageScreen.route + "/{item}",
+            arguments = listOf(
+                navArgument("item") {type = NavType.StringType}
+            )
+        ) {backStackEntry ->
+            backStackEntry.arguments?.getString("item")?.let {
                 ImageScreen(itemUrl = it)
             }
         }

@@ -1,6 +1,7 @@
 package com.example.recipebook.screens
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
@@ -17,6 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.recipebook.R
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -27,7 +30,7 @@ fun ImageScreen(itemUrl: String, modifier: Modifier = Modifier) {
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        if (downloadState.value) {
+        AnimatedVisibility(visible = downloadState.value) {
             Row(
                 modifier = modifier.padding(16.dp),
                 horizontalArrangement = Arrangement.End
@@ -52,9 +55,10 @@ fun ImageScreen(itemUrl: String, modifier: Modifier = Modifier) {
                     imageVector = Icons.Default.Warning,
                     contentDescription = "Image"
                 )
+
             } else {
                 Image(
-                    painter = rememberAsyncImagePainter(itemUrl),
+                    painter = rememberAsyncImagePainter(URLDecoder.decode(itemUrl,  StandardCharsets.UTF_8.toString())),
                     contentDescription = "Image"
                 )
             }
