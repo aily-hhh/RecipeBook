@@ -32,6 +32,20 @@ class RecipeBookViewModel @Inject constructor(private val repository: ApiReposit
         }
     }
 
+    private var _recomRecipes: MutableLiveData<Recipes> = MutableLiveData()
+    val recomRecipes: LiveData<Recipes> get() = _recomRecipes
+    fun recommendQuery(query: Int, currentName: String) {
+        val filteredList = ArrayList<Recipe>()
+        viewModelScope.launch {
+            allRecipes.value?.recipes?.forEach { recipe ->
+                if (recipe.difficulty == query && recipe.name != currentName) {
+                    filteredList.add(recipe)
+                }
+            }
+            _recomRecipes.postValue(Recipes(filteredList))
+        }
+    }
+
     fun performQuery(query: String) {
         val filteredList = ArrayList<Recipe>()
         viewModelScope.launch {

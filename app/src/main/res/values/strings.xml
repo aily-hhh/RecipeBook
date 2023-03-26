@@ -3,6 +3,7 @@
     <string name="search">Search</string>
     <string name="description">Description</string>
     <string name="instruction">Instruction</string>
+    <string name="recommendation">Recommendation</string>
     <string name="download">Download</string>
     <string name="by_default">By default</string>
     <string name="by_date">By date</string>

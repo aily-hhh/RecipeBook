@@ -28,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.example.recipebook.R
 import coil.compose.rememberAsyncImagePainter
+import com.example.recipebook.data.models.Recipes
 import com.example.recipebook.data.viewModels.RecipeBookViewModel
 import com.example.recipebook.navigation.Screens
 import com.example.recipebook.ui.theme.RecipeBookTheme
@@ -62,7 +64,7 @@ fun DetailScreen(
             }
 
         LazyColumn(
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(vertical = 16.dp),
             modifier = modifier.fillMaxSize()
         ){
             item {
@@ -72,6 +74,7 @@ fun DetailScreen(
                             text = currentItem.name,
                             modifier = modifier
                                 .align(CenterHorizontally)
+                                .padding(horizontal = 16.dp)
                                 .paddingFromBaseline(bottom = 4.dp),
                             fontSize = 22.sp,
                             style = MaterialTheme.typography.h6
@@ -87,6 +90,7 @@ fun DetailScreen(
                     Row(
                         modifier = modifier
                             .padding(bottom = 16.dp)
+                            .padding(horizontal = 16.dp)
                             .align(Alignment.Start)
                     ) {
                         for (i in 1..currentItem.difficulty) {
@@ -98,12 +102,14 @@ fun DetailScreen(
                     }
                     if (!currentItem.description.isNullOrEmpty()) {
                         TextSection(
+                            modifier = modifier.padding(horizontal = 8.dp),
                             title = stringResource(id = R.string.description),
                             currentText = currentItem.description
                         )
                     }
                     if (!currentItem.instructions.isNullOrEmpty()) {
                         TextSection(
+                            modifier = modifier.padding(horizontal = 8.dp),
                             title = stringResource(id = R.string.instruction),
                             currentText = currentItem.instructions
                         )
@@ -116,10 +122,46 @@ fun DetailScreen(
                         modifier = modifier
                             .paddingFromBaseline(bottom = 16.dp)
                             .padding(end = 8.dp)
+                            .padding(horizontal = 8.dp)
                             .align(Alignment.End),
                         fontSize = 10.sp,
                         color = Color.LightGray
                     )
+                }
+            }
+            item {
+                Column(modifier = modifier) {
+                    Spacer(modifier = modifier.height(16.dp))
+                    Text(
+                        text = stringResource(id = R.string.recommendation),
+                        modifier = modifier
+                            .align(CenterHorizontally),
+                        style = MaterialTheme.typography.button,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 12.sp
+                    )
+                    val recom = viewModel.recomRecipes.observeAsState(Recipes(listOf())).value
+                    viewModel.recommendQuery(currentItem.difficulty, currentItem.name)
+                    LazyRow(
+                        contentPadding = PaddingValues(8.dp)
+                    ) {
+                        items(recom.recipes) {recipe ->
+                            Card(
+                                modifier = modifier.padding(8.dp),
+                                shape = MaterialTheme.shapes.medium,
+                                onClick = {
+                                    navController.navigate(Screens.DetailScreen.route + "/${recipe.uuid}")
+                                }
+                            ) {
+                                Text(
+                                    modifier = modifier
+                                        .align(CenterHorizontally)
+                                        .padding(8.dp),
+                                    text = recipe.name
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
